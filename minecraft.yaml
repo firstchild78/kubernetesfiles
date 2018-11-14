@@ -39,4 +39,17 @@ spec:
       name: rcon
   selector:
     app: minecraft-server
-
+    
+---
+  apiVersion: v1
+  kind: Service
+  metadata:
+    name: grafana
+    namespace: monitoring
+  spec:
+    type: LoadBalancer
+    ports:
+      - port: 3000
+        targetPort: 3000
+    selector: 
+      app: kube-prometheus-grafana
