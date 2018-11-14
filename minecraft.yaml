@@ -13,10 +13,13 @@ spec:
     metadata:
       labels:
         app: minecraft-server
+      annotations:
+        prometheus.io/scrape: 'true'
+        prometheus.io/port: '1234'
     spec:
       containers:
       - name: minecraft-server
-        image: openhack/minecraft-server:1.0
+        image: openhack/minecraft-server:2.0
         env:
          - name: EULA
            value: "TRUE"
@@ -25,6 +28,11 @@ spec:
           name: default
         - containerPort: 25575
           name: rcon
+      - name: minecraft-metrics
+        image: msopenhack.azurecr.io/minecraft-metrics:v1
+        ports:
+        - containerPort: 1234
+          name: prometheus
 ---
 apiVersion: v1
 kind: Service
@@ -39,4 +47,32 @@ spec:
       name: rcon
   selector:
     app: minecraft-server
+
+---
+  apiVersion: v1
+  kind: Service
+  metadata:
+    name: grafana
+    namespace: monitoring
+  spec:
+    type: LoadBalancer
+    ports:
+      - port: 3000
+        targetPort: 3000
+    selector: 
+      app: kube-prometheus-grafana
+
+---
+  apiVersion: v1
+  kind: Service
+  metadata:
+    name: prometheus
+    namespace: monitoring
+  spec:
+    type: LoadBalancer
+    ports:
+      - port: 9090
+        targetPort: 9090
+    selector: 
+      app: prometheus
 
