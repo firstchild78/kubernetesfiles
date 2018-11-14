@@ -1,0 +1,28 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: minecraft-deployment
+  labels:
+    app: minecraft-server
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: minecraft-server
+  template:
+    metadata:
+      labels:
+        app: minecraft-server
+    spec:
+      containers:
+      - name: minecraft-server
+        image: openhack/minecraft-server:1.0
+        env:
+         - name: EULA
+           value: "TRUE"
+        ports:
+        - containerPort: 25565
+          name: default
+        - containerPort: 25575
+          name: rcon
+
